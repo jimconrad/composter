@@ -11,7 +11,7 @@
 #include "SoundMaker.h"
 
 /******************************************************************************************************************
- * Composter Control Program
+ * ComposterSketch Arduino sketch, the main program, for the Composter Controller
  * 
  * Control Panel Functionality
  *  Button1 press:    Rotate drum clockwise (CW) until released
@@ -23,6 +23,7 @@
  *  Sleep:            Microprocessor naps after period of inactivity
  *  Awaken:           Microprocessor awakens after sleeping
  *  Battery:          Sleeps and ignores autorun schedule if discharged, sucks power if overcharged
+ *  Sound:            Audible feedback (clicks and beeps) to control panel user
  *  
  * Resource Usage:
  *  arduino pins      Defined in pinAssignments.h
@@ -31,6 +32,7 @@
  *  WDT               Watchdog timer awakens processor from nap with an interrupt after 8 seconds of idleness
  *  
  *  References
+ *  Sketch for C/C++  https://github.com/arduino/Arduino/wiki/Build-Process 
  *  Arduino Pro Micro https://www.sparkfun.com/products/12640
  *  Pro Micro Pins    https://cdn.sparkfun.com/datasheets/Dev/Arduino/Boards/ProMicro16MHzv1.pdf
  *  Sleep             https://github.com/rocketscream/Low-Power
