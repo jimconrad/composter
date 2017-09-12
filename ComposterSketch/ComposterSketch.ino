@@ -1,14 +1,4 @@
 
-#include "Composter.h"
-#include "PDebug.h"
-#include "PButton.h"
-#include "PSleep.h"
-#include "pinAssignments.h"
-#include "MotorController.h" 
-#include "Schedule.h"
-#include "Battery.h"
-#include "LED.h"
-#include "SoundMaker.h"
 
 /******************************************************************************************************************
  * ComposterSketch Arduino sketch, the main program, for the Composter Controller
@@ -18,18 +8,19 @@
  *  Button2 press:    Rotate drum counterclockwise (CCW) until released
  *  Button3 press:    Program drum to autorun periodically starting 24 hours from now
  *  Button3 hold:     Cancel drum scheduler's autorun program
+ *  Speaker:          Audible feedback (clicks and beeps) to control panel user
  *  
  * Other Functionality
  *  Sleep:            Microprocessor naps after period of inactivity
  *  Awaken:           Microprocessor awakens after sleeping
  *  Battery:          Sleeps and ignores autorun schedule if discharged, sucks power if overcharged
- *  Sound:            Audible feedback (clicks and beeps) to control panel user
  *  
  * Resource Usage:
  *  arduino pins      Defined in pinAssignments.h
  *  timer0            millis and delay
  *  timer1            PWM controlling motor speed on pin 9
  *  WDT               Watchdog timer awakens processor from nap with an interrupt after 8 seconds of idleness
+ *  RTC               On the I2C bus
  *  
  *  References
  *  Sketch for C/C++  https://github.com/arduino/Arduino/wiki/Build-Process 
@@ -41,8 +32,21 @@
  *  Motor Controller  http://www.robotshop.com/en/cytron-30a-5-30v-single-brushed-dc-motor-driver.html
  *  Relay Controller  https://www.sparkfun.com/products/13815
  *  Gear Motor:       http://www.surpluscenter.com/Electric-Motors/DC-Gearmotors/DC-Gearmotors/100-RPM-12-Volt-DC-Gearmotor-5-1649.axd
+ *  Speaker:          https://www.sparkfun.com/products/7950 
  * 
  *****************************************************************************************************************/
+
+
+#include "Composter.h"
+#include "PDebug.h"
+#include "PButton.h"
+#include "PSleep.h"
+#include "pinAssignments.h"
+#include "MotorController.h" 
+#include "Schedule.h"
+#include "Battery.h"
+#include "LED.h"
+#include "SoundMaker.h"
 
 //Define the composter states
 enum comState {
@@ -71,10 +75,18 @@ static SoundMaker audio = SoundMaker(pinAudio);  //The speaker
 
 
 //Composter state variable.  The FSM analyzes the control panel button activity.
-comState state;                           //This is the FSM's state var
+static comState state;                           //This is the FSM's state var
+
+//As a developer, I need to know the average time spent in the loop() code so I can optimize power usage
+static long  totalLoopTime;                          //milliseconds in loop()
+static long  nTimesLoopInvoked;                      //Counts invocations of loop()
 
 //Initialize the composter system
 void setup() {
+
+  //Reset the loop timing data
+  totalLoopTime=0L;
+  nTimesLoopInvoked=0L;
   
   state=IDL;                              //Initial state is IDL
 
@@ -104,6 +116,9 @@ void setup() {
 
 //Composter's activity loop executed forever
 void loop() {
+
+  //The loop-timing feature is for software developers, not the end-user of the composter
+  long t0 = millis();                             //Time at start of loop()
   
   //Poll and Update the status of objects that won't get updated otherwise
   b3t.update();
@@ -115,8 +130,13 @@ void loop() {
   lowBattery.set(Battery::isLow());                 //Battery discharged?
   highBattery.set(Battery::isHigh());               //Battery Overcharged?
   scheduled.set(sked.enabled());                    //Autorun scheduler enabled?
-  delay(10);                                        //Ensure flashing LEDs get seen
+  delay(5L);                                        //Ensure the LEDs flash for a few ms
 
+  //Press *both* b1 and b2 for diagnostic information
+  if (b1.isPressed()&&b2.isPressed()) {
+    if (nTimesLoopInvoked>0) {DPRINT(String("Avg loop time = "+String(totalLoopTime/nTimesLoopInvoked)+" ms"));}
+  }
+  
   //Composter state determines what to do with incoming events
   switch(state) {
 
@@ -153,10 +173,8 @@ void loop() {
     case NAP:
       if (Battery::isLow()) {                     //Has the battery discharged while composter naps?
         DPRINT("discharged");
-        audio.doBeep(FREQEF);                     //Error sound (the minor drop for Cm)
         doNap();                                  //Return to anp
       } else if (b1.isPressed()) {
-        DPRINT("b1 fm nap");
         audio.doClick();
         motor.start(MCW);
         state=RCW;
@@ -219,7 +237,7 @@ void loop() {
         sked.setStartTime();                        //Set now as the start time & enable the daily composter autoRun
         state=IDL;
       } else if (b3.isPressed()&&b3t.isExpired()) {  //Did user hold B3?
-        audio.doBeep(FREQG);
+        audio.doBeep(FREQC);
         sked.disable();                               //Disable autoRun schedule
         state=B3W;                                    //Return to IDL later when user releases B3
         DPRINT("~A");
@@ -230,6 +248,10 @@ void loop() {
     break;
     
   }
+
+  long t1 = millis();                               //Time when loop() finished
+  totalLoopTime += (t1 - t0);                       //Sum time in ms
+  nTimesLoopInvoked++;                              //Count invocations
     
 }
 

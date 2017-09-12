@@ -1,4 +1,4 @@
-/**
+/************************************************************************************************
  * Battery.cpp --- Monitor the composter's battery charge
  * 
  * Note:  The battery is assumed to be a single 12V AGM lead-acid of about 8AH capacity and
@@ -18,9 +18,9 @@
  * single battery (no need for Battery objects).
  * 
  * Misc:  The gear motor draws 6.0A continuous and is rated for 60A peak.  A one minute
- * run will consume 0.10AH.
+ * run will consume about 0.10AH.
  * 
- */
+ ***********************************************************************************************/
 
  #include <Arduino.h>
  #include "Composter.h"

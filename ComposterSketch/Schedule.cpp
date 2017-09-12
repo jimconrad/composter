@@ -1,11 +1,11 @@
-/**
+/*****************************************************************************************************************
  * Schedule.cpp --- Implementation of the composter's schedule determining when to toss the drum
  * 
  * Note:  The implementation assumes that it owns the SparkFun DS1307 Real-Time Clock (RTC).
  * Note:  Only enabled, not finished, is kept in EEPROM to avoid wearing out EEPROM write cycles
  * as the machine toggles every day to finished and not.
  * 
- */
+ ****************************************************************************************************************/
  
 #include <Wire.h>
 #include <SparkFunDS1307RTC.h>

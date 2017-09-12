@@ -1,7 +1,7 @@
-/**
+/******************************************************************************************************************
  * SoundMaker --- Generates the various sounds enabling the control panel to provide audible feedback to user
  * 
- */
+ ******************************************************************************************************************/
  #include "Arduino.h"
  #include "SoundMaker.h"
  #include "Composter.h"

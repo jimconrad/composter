@@ -1,4 +1,7 @@
-
+/**
+ * These are debugging definitions used in the ComposterSketch
+ */
+ 
 //Define class thru which debug msgs flow
 #define  DOUT   Serial
 

@@ -1,4 +1,4 @@
-/*
+/***********************************************************************************************
  * PButton.cpp --- debounced physical button 
  * 
  * Debouncing algorithm:  Button is considered pressed when contact is first detected.
@@ -7,9 +7,7 @@
  * Note:  The pull-up resistors invert the input logic.  A NO button will be HIGH when
  * RELEASED and will be LOW when PRESSED.
  *
- *  Created on: Apr 25, 2016
- *      Author: kq7b
- */
+ **********************************************************************************************/
 #include "Composter.h"
 #include "PDebug.h"
 #include "Arduino.h"

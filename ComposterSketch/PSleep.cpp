@@ -1,4 +1,4 @@
-/**
+/******************************************************************************************************************
  * This module is responsible for entering and awakening from the processor's sleep-mode
  * 
  * Notes:  There are many choices re. what to disable in the processor.  We are keeping these elements 
@@ -8,13 +8,14 @@
  *  WDT         Interrupts an idle processor following an 8-second nap
  *  interrupts  Level change interrupts awaken processor when a button is pressed
  *  
- */
+ ******************************************************************************************************************/
 
  #include "Composter.h"
  #include "PDebug.h"
  #include "PTimer.h"
  #include "LowPower.h"
  #include "PSleep.h"
+
 
 
   //This is the idle timer used to measure the duration in ms of periods of inactivity

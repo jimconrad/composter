@@ -1,4 +1,4 @@
-/*
+/******************************************************************************************************************
  * MotorController.cpp
  *
  * Developed for the Robot Shop RB-Cyt-133 30A 5-30V Single Brushed DC Motor Driver
@@ -6,7 +6,7 @@
  * The motor controller can determine if the motor is running, start the motor in a
  * particular direction, and stop the motor.
  * 
- * The motor starts and stops somewhat slowly to prevent damage to the mechanical drive
+ * we start/stop the motor somewhat slowly to prevent damage to the mechanical drive
  * train.  The accel/decel feature is implemented here.
  * 
  * This implementation was developed for a Robot Shop RB-Cyt-133 30A 5-30V Single Brushed
@@ -19,9 +19,7 @@
  * needed.  We provide a brief delay after powering-up the controller for the relay to settle and
  * the controller's logic to initialize before we start the motor.
  *
- *  Created on: Apr 3, 2016
- *      Author: kq7b
- */
+ ******************************************************************************************************************/
 
 #include "Arduino.h"
 #include "Composter.h"
@@ -31,6 +29,7 @@
 
 
 /**
+ * Constructor needs to know the three pins for controlling the motor
  * apwmPin - arduino pwm pin assigned to the motor controller
  * adirPin - arduino digital pin assigned to control the motor's direction
  * arelayPin - arduino digital pin (or 0 if none) assigned to power-up/down the motor controller
