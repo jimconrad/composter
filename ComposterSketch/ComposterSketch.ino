@@ -223,7 +223,7 @@ void loop() {
         state=DCL;            //Decelerate to stop
       }
 
-    //Ignore events until motor decels to a stop then become idle
+    //Decelerating:  Ignore all events until motor controller decels motor to a stop, then become idle
     case DCL:
       if (motor.isStopped()) {
         DPRINT("stopped");
@@ -235,11 +235,12 @@ void loop() {
     case B3W:
       if (b3.isReleased()&&b3t.isRunning()) {       //Did user tap B3?
         sked.setStartTime();                        //Set now as the start time & enable the daily composter autoRun
-        state=IDL;
+        doStartMotor();                             //And start an autorun sequence right now
       } else if (b3.isPressed()&&b3t.isExpired()) {  //Did user hold B3?
         audio.doBeep(FREQC);
-        sked.disable();                               //Disable autoRun schedule
-        state=B3W;                                    //Return to IDL later when user releases B3
+        sked.disable();                             //Yes, disable autoRun schedule
+        motor.stop();                               //Begin stopping the motor if it's running
+        state=DCL;                                  //Deceleraterating now
         DPRINT("~A");
       } else if (b3.isReleased()&&b3t.isExpired()) {
         state=IDL;                                    //Released button
@@ -280,7 +281,7 @@ void doNap() {
 
 
 /**
- * Helper method to start the drum motor in autorunning state
+ * Helper method to start the drum motor and enter the autorunning state
  */
 void doStartMotor() {
         DPRINT("doStartMotor");
