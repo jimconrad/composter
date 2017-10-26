@@ -1,7 +1,7 @@
 
 
 /******************************************************************************************************************
- * ComposterSketch Arduino sketch, the main program, for the Composter Controller
+ * ComposterSketch, an Arduino sketch, the main program, for the Composter Controller
  * 
  * Control Panel Functionality
  *  Button1 press:    Rotate drum clockwise (CW) until released
@@ -81,16 +81,21 @@ static comState state;                           //This is the FSM's state var
 static long  totalLoopTime;                          //milliseconds in loop()
 static long  nTimesLoopInvoked;                      //Counts invocations of loop()
 
-//Initialize the composter system
+//------------------------------------------------------------------------------------------------------
+//  The arduino kernel invokes setup() to initialize the composter controller
+//------------------------------------------------------------------------------------------------------
 void setup() {
 
-  //Reset the loop timing data
+  //Initialize some variables that are used during development to determine the average time spent
+  //in each pass through the controller's loop() code
   totalLoopTime=0L;
   nTimesLoopInvoked=0L;
-  
+
+  //Initial machine state following arduino reset
   state=IDL;                              //Initial state is IDL
 
-  //Try to setup 32U4 USB communication with host computer if present, blinking 3X or until USB is ready
+  //Try upto 3 times to detect a USB-connected host to our arduino 32U4 CPU.  After
+  //each failing attempt to detect SerialUSB ready, we beep and blink all the LEDs
   Serial.begin(57600);
   for(int i=1;(i<=3)&&(!SerialUSB);i++) {
     audio.doBeep(FREQG);
@@ -109,16 +114,18 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(pinB2),intHan,CHANGE);
   attachInterrupt(digitalPinToInterrupt(pinB3),intHan,CHANGE);
 
-  //Startup the remainder
-  sked.start();                                     //Scheduler
+  //Startup the composter's autorun scheduler
+  sked.start();                              
 
 }
 
-//Composter's activity loop executed forever
+//------------------------------------------------------------------------------------------------------------
+//  The arduino kernel repeatedly invokes loop() which drives the composter's state machine
+//------------------------------------------------------------------------------------------------------------
 void loop() {
 
   //The loop-timing feature is for software developers, not the end-user of the composter
-  long t0 = millis();                             //Time at start of loop()
+  long t0 = millis();                             //Time at start of a pass through loop()
   
   //Poll and Update the status of objects that won't get updated otherwise
   b3t.update();
@@ -132,9 +139,10 @@ void loop() {
   scheduled.set(sked.enabled());                    //Autorun scheduler enabled?
   delay(5L);                                        //Ensure the LEDs flash for a few ms
 
-  //Press *both* b1 and b2 for diagnostic information
+  //Press *both* buttons b1 and b2 for diagnostic information
   if (b1.isPressed()&&b2.isPressed()) {
     if (nTimesLoopInvoked>0) {DPRINT(String("Avg loop time = "+String(totalLoopTime/nTimesLoopInvoked)+" ms"));}
+    DPRINT(String("State="+state));
   }
   
   //Composter state determines what to do with incoming events
