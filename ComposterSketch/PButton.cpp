@@ -5,7 +5,8 @@
  * Button is considered released after contact drops out for a specific time interval.
  * 
  * Note:  The pull-up resistors invert the input logic.  A NO button will be HIGH when
- * RELEASED and will be LOW when PRESSED.
+ * RELEASED and will be LOW when PRESSED.  The button should connect the Arduino pin to
+ * ground via a resistor of about 330 ohms.
  *
  **********************************************************************************************/
 #include "Composter.h"
@@ -52,7 +53,7 @@ void PButton::update() {
         DPRINT(">PBP");
       } else if (debounceTimer.isExpired()) {         //If the debounce timer expired..
         state = PBR;                                  //Then consider the button released
-        debounceTimer.start();                        //And restart the timer
+        //debounceTimer.start();                        //And restart the timer
         DPRINT(">PBR");
       }
     break; 
@@ -62,7 +63,7 @@ void PButton::update() {
  //Public method to see if button has been pressed
  bool PButton::isPressed() {
   update();                                       //Update current state of PButton object
-  return (state==PBP)||(state==PBI);
+  return (state==PBP)/*||(state==PBI)*/;
  }
 
  //Public method to see if button has been released

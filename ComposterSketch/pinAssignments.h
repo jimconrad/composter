@@ -18,8 +18,8 @@
 #define pinSCL      3   //I2C SCL
 
 //Control panel buttons must be on external (level) interrupt pins to wake-up processor
-#define pinB1  		  0		//Digital INT pin for Button 1 
-#define pinB2  		  1 	//Digital INT pin for Button 2 
+#define pinB1  		  0		//Digital INT pin (RXI) for Button 1 
+#define pinB2  		  1 	//Digital INT pin (TXO) for Button 2 
 #define pinB3       7   //Digital INT pin for BUtton 3
 
 //LED Indicators
@@ -33,6 +33,6 @@
 #define pinMotorPwr 10	//Digital pin for motor controller power supply
 
 //Reserved pins for the SPI serial bus in case we ever install an LCD panel
-#define pinAudio    16  //Speaker
+#define pinAudio    15  //Speaker
 
 #endif /* PINASSIGNMENTS_H_ */
