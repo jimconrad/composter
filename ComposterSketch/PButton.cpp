@@ -29,7 +29,7 @@ void PButton::update() {
 
   switch(state) {
 
-    //PButton is currently released.  We ignore bounces if the timer is running
+    //PButton is currently released.  We ignore bounces while timer is running
     case PBR:
       if ((!debounceTimer.isRunning()) && digitalRead(pin)==PRESSED) {  //Initial contact press?
         state = PBP;                    //Yes, button pressed
@@ -38,7 +38,7 @@ void PButton::update() {
       }
     break;
 
-    //PButton is currently pressed
+    //PButton is currently pressed.  Ignore bounces until timer expires.
     case PBP:
       if (digitalRead(pin)==RELEASED) {   //This release might be noise
         state = PBI;                      //Ignore contact noise until timer expires
@@ -53,7 +53,7 @@ void PButton::update() {
         DPRINT(">PBP");
       } else if (debounceTimer.isExpired()) {         //If the debounce timer expired..
         state = PBR;                                  //Then consider the button released
-        //debounceTimer.start();                        //And restart the timer
+        debounceTimer.start();                        //Causes PBR to ignore bounces
         DPRINT(">PBR");
       }
     break; 

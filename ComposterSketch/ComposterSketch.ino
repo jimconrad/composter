@@ -253,6 +253,7 @@ void loop() {
       } else if (b3.isReleased()&&b3t.isExpired()) {
         state=IDL;                                    //Released button
         sked.disable();                               //only for race condition
+        DPRINT("~A2");
       }
     break;
     
