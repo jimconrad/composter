@@ -198,9 +198,11 @@ void loop() {
         b3t.start();                //Start the B3 timer
       } else if (sked.isTimeToStart()) {
         doStartMotor();
+      } else if (b1.isStable()&&b2.isStable()&&b3.isStable()) {
+        DPRINT("Nothing to do here"); //No button activity pending
+        doNap();                      //Probably WDT awoke us.  Put the composter down for a nap
       } else {
-        DPRINT("Nothing to do here");
-        doNap();                    //Probably WDT awoke us.  Put the composter down for a nap
+        DPRINT("...");
       }
     break;
 

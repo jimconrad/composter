@@ -17,6 +17,7 @@
   enum PButtonState {
     PBI,  //Pressed and ignoring contact noise
     PBP,  //Pressed
+    PBX,  //Released and ignoring contact noise
     PBR   //Released
   };
 
@@ -26,6 +27,7 @@ public:
   void update();
 	bool isPressed();
   bool isReleased();
+  bool isStable();
   PButtonState getState();
 
 private:

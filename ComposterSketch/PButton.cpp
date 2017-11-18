@@ -29,47 +29,60 @@ void PButton::update() {
 
   switch(state) {
 
-    //PButton is currently released.  We ignore bounces while timer is running
+    //PButton is currently released.  
     case PBR:
-      if ((!debounceTimer.isRunning()) && digitalRead(pin)==PRESSED) {  //Initial contact press?
-        state = PBP;                    //Yes, button pressed
+      if (digitalRead(pin)==PRESSED) {  //Initial contact press?
+        state = PBI;                    //Yes, button pressed
         debounceTimer.start();          //Start debounce timer
-        DPRINT(">PBP");
-      }
-    break;
-
-    //PButton is currently pressed.  Ignore bounces until timer expires.
-    case PBP:
-      if (digitalRead(pin)==RELEASED) {   //This release might be noise
-        state = PBI;                      //Ignore contact noise until timer expires
         DPRINT(">PBI");
       }
     break;
 
-    //PButton is currently ignoring electrical contact noise after initial press
+    //PButton has been initially pressed and is ignoring bounces until timer expires
     case PBI:
-      if (digitalRead(pin)==PRESSED) {                //If the button is pressed again...
-        state = PBP;                                  //THen return to pressed state
-        DPRINT(">PBP");
-      } else if (debounceTimer.isExpired()) {         //If the debounce timer expired..
-        state = PBR;                                  //Then consider the button released
-        debounceTimer.start();                        //Causes PBR to ignore bounces
-        DPRINT(">PBR");
+      if (debounceTimer.isExpired()) {            
+        state = digitalRead(pin)==PRESSED ? PBP : PBR;
+        debounceTimer.reset();
+        DPRINT(state);
       }
     break; 
+
+    //PButton is currently pressed
+    case PBP:
+      if (digitalRead(pin)==RELEASED) { //Released?
+        state = PBX;                    //Yes, button initially released
+        debounceTimer.start();          //Start debounce timer 
+        DPRINT(">PBX");
+      }
+
+    //PButton has been initially released and is ignoring bounces until timer expires
+    case PBX:
+      if (debounceTimer.isExpired()) {
+        state = digitalRead(pin)==RELEASED ? PBR : PBP;
+        debounceTimer.reset();
+        DPRINT(state);
+      }
+      break;
   }
  }
 
  //Public method to see if button has been pressed
  bool PButton::isPressed() {
   update();                                       //Update current state of PButton object
-  return (state==PBP)/*||(state==PBI)*/;
+  return (state==PBP);
  }
 
  //Public method to see if button has been released
  bool PButton::isReleased() {
   update();
   return (state==PBR);                      
+ }
+
+ //Public method to see if button is stable
+ bool PButton::isStable() {
+  DPRINT("isInactive");
+  update();
+  return (state==PBR||state==PBP);
  }
 
  //Get state of button
