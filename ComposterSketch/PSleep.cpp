@@ -33,7 +33,7 @@ PSleep::PSleep() {
 
 
 /**
- * Start the idle timer measuring a period of inactivity
+ * Start the idle timer measuring a period of inactivity 
  */
  void PSleep::startIdleTimer() {
   DPRINT("startIdleTimer");
@@ -75,7 +75,7 @@ PSleep::PSleep() {
   * Take a nap by configuring the processor to awaken in response to certain interrupts or WDT, place the
   * processor in some power-saving mode, and restore the operating environment following the nap.
   * 
-  * Note:  Requests to sleep are ignored if battery voltage is excessive.  The idea is to drain the
+  * Note:  Requests to sleep are ignored if battery voltage is excessive.  The idea is to drain the 
   * excessive charge.
   */
   void PSleep::sleepNow() {

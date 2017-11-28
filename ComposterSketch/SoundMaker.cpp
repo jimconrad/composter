@@ -10,7 +10,7 @@
  /**
   * Constructor memorizes the pin number for the speaker
   */
-  SoundMaker::SoundMaker(byte pinNumber) {
+  SoundMaker::SoundMaker(byte pinNumber) { 
     pin = pinNumber;
   }
 

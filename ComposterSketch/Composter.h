@@ -1,5 +1,5 @@
-/**
- * Global definitions for the Composter sketch 
+ /**
+ * Global definitions for the Composter sketch  
  */
 
 //Debug configuration
@@ -20,7 +20,7 @@
 #else
 #define ARMS 60000L             //Autorun duration.  In production mode, autorun for 60 seconds
 #define MCMS 5000L              //Power-off the motor controller after 5 seconds of inactivity
-#define IAMS 30000L             //Inactive interval. In production mode, place processor to sleep after 60 seconds of inactivity
+#define IAMS 30000L             //Inactive interval. In production mode, place processor to sleep after 30 seconds of inactivity
 #endif
 
 //EEPROM address assignments

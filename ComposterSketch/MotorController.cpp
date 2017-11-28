@@ -1,7 +1,7 @@
 /******************************************************************************************************************
  * MotorController.cpp
  *
- * Developed for the Robot Shop RB-Cyt-133 30A 5-30V Single Brushed DC Motor Driver
+ * Developed for the Robot Shop RB-Cyt-133 30A 5-30V Single Brushed DC Motor Driver 
  * 
  * The motor controller can determine if the motor is running, start the motor in a
  * particular direction, and stop the motor.

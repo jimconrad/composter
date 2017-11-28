@@ -20,6 +20,8 @@ public:
   void update();              //Update status
   void setFinished();         //Finished running today
   bool enabled();             //Scheduler enabled?
+  byte getHour();             //Current time of day
+  byte getMinute();           //Current time of day
   
 private:
   bool finished;              //Composter has finished running on schedule today

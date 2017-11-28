@@ -9,7 +9,7 @@
  
 #include <Wire.h>
 #include <SparkFunDS1307RTC.h>
-#include <EEPROM.h>
+#include <EEPROM.h> 
 
 #include "Composter.h"
 #include "PTimer.h"
@@ -43,6 +43,7 @@ void Schedule::start() {
   //While debugging the code, we initialize the RTC NVM with the TOD each time the program starts-up
   rtc.autoTime();                 //Set the TOD to be the compile time. 
   DPRINT(String("RTC TOD set to ")+String(__DATE__)+String(" ")+String(__TIME__));
+  DPRINT("Start at "+String(rtc.getHour())+":"+String(rtc.getMinute()));
 
   //In debugging mode, we initialized the scheduler disabled
   bool enabled=false;
@@ -158,4 +159,21 @@ void Schedule::start() {
     bool enabled=false;
     EEPROM.put(EESKEDEN,enabled);             //Record in non-volatile memory
    }
+
+   /**
+    * Get hour
+    */
+    byte Schedule::getHour() {
+            //Calculate the current time as seconds elapsed since last midnight
+      return rtc.getHour();
+    }
+
+    /**
+     * Get minute
+     */
+     byte Schedule::getMinute() {
+      return rtc.getMinute();
+     }
+
+     
 

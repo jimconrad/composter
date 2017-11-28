@@ -55,6 +55,7 @@ enum comState {
   RCC,             //Running CCW
   DCL,             //Decelerating to a stop
   B3W,             //Button 3 wait
+  B3R,             //Button 3 released
   ARN,             //Autorunning the drum
   NAP              //Processor is napping to save power
 };
@@ -115,7 +116,12 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(pinB3),intHan,CHANGE);
 
   //Startup the composter's autorun scheduler
-  sked.start();                              
+  sked.start(); 
+
+   //Log the startup time
+   byte hour = sked.getHour();
+   byte minute = sked.getMinute();
+   LOG("Starting at "+String(hour)+":"+String(minute));                       
 
 }
 
@@ -167,7 +173,7 @@ void loop() {
         b3t.start();                //Start the B3 timer
       } else if (sked.isTimeToStart()) {
         doStartMotor();             //Start the motor
-      } else {                      //Composter is inactive
+      } else {                      //Composter is inactive 
         if (nap.isIdleTimerExpired()) {             //If the inactive interval timer has expired then put the processor to sleep
           doNap();
         } else if (!nap.isIdleTimerActive()) {      //Start inactive timer if not already running
@@ -244,20 +250,26 @@ void loop() {
     //Awaiting B3 tapped/held decision to determine if user enabled/disabled autoRun
     case B3W:
       if (b3.isReleased()&&b3t.isRunning()) {       //Did user tap B3?
+        DPRINT("B3 tapped");
         sked.setStartTime();                        //Set now as the start time & enable the daily composter autoRun
         doStartMotor();                             //And start an autorun sequence right now
       } else if (b3.isPressed()&&b3t.isExpired()) {  //Did user hold B3?
+        DPRINT("B3 held");
         audio.doBeep(FREQC);
-        sked.disable();                             //Yes, disable autoRun schedule
-        motor.stop();                               //Begin stopping the motor if it's running
-        state=DCL;                                  //Deceleraterating now
-        DPRINT("~A");
-      } else if (b3.isReleased()&&b3t.isExpired()) {
-        state=IDL;                                    //Released button
-        sked.disable();                               //only for race condition
-        DPRINT("~A2");
+        state=B3R;                                  //Wait for user to release B3
       }
     break;
+
+    //Waiting for user holding B3 pressed to finally release it
+    case B3R:
+      if (b3.isReleased()) {                //Has user released B3?
+        DPRINT("~B3");      
+        sked.disable();                     //Yes, disable the autoRun schedule
+        motor.stop();                       //Begin stopping the motor if it's running at this moment
+        state=DCL;                          //Wait for motor to decelerate to a stop                  
+      } else {
+        audio.doBeep(FREQC);                //Beep until they release the button
+      }
     
   }
 
@@ -278,7 +290,7 @@ void doNap() {
 
     state=NAP;                                //When we awaken, we'll need to know what we were doing
 
-    //Snuff the LEDs to save power.  They'll light up as needed in loop()
+    //Snuff the LEDs to save power.  They'll light up momentarily in loop()
     lowBattery.doOff();
     highBattery.doOff();
     scheduled.doOff();
@@ -296,7 +308,7 @@ void doNap() {
  */
 void doStartMotor() {
         DPRINT("doStartMotor");
-        motor.start(MCW);           //Start the motor
+        motor.start(MCCW);           //Start the motor
         art.start();                //Start the timer that ends autorun
         state=ARN;                  //Autorunning state
         sked.setFinished();         //Tell sked we did it today

@@ -3,7 +3,7 @@
  * 
  * This file defines how the composter is wired to the arduino bus pins
  *
- *  Created on: Apr 5, 2016
+ *  Created on: Apr 5, 2016 
  *      Author: jimconrad
  */
 

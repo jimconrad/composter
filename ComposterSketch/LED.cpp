@@ -1,5 +1,5 @@
 /****************************************************************************
- * LED.cpp --- Controller for a Light Emitting Diode
+ * LED.cpp --- Controller for a Light Emitting Diode 
  ***************************************************************************/
 
 #include "Arduino.h"

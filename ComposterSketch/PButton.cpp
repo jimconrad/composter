@@ -40,7 +40,8 @@ void PButton::update() {
 
     //PButton has been initially pressed and is ignoring bounces until timer expires
     case PBI:
-      if (debounceTimer.isExpired()) {            
+      if (debounceTimer.isExpired()) {  
+        DPRINT("PBI isExpired"); 
         state = digitalRead(pin)==PRESSED ? PBP : PBR;
         debounceTimer.reset();
         DPRINT(state);
@@ -58,6 +59,7 @@ void PButton::update() {
     //PButton has been initially released and is ignoring bounces until timer expires
     case PBX:
       if (debounceTimer.isExpired()) {
+        DPRINT("PBX isExpired");
         state = digitalRead(pin)==RELEASED ? PBR : PBP;
         debounceTimer.reset();
         DPRINT(state);
@@ -68,7 +70,7 @@ void PButton::update() {
 
  //Public method to see if button has been pressed
  bool PButton::isPressed() {
-  update();                                       //Update current state of PButton object
+  update();                                       //Update current state of PButton object  
   return (state==PBP);
  }
 
@@ -80,8 +82,8 @@ void PButton::update() {
 
  //Public method to see if button is stable
  bool PButton::isStable() {
-  DPRINT("isInactive");
-  update();
+  DPRINT("isStable()");
+  //update();    //race condition
   return (state==PBR||state==PBP);
  }
 
