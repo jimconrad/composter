@@ -40,10 +40,6 @@ void Schedule::start() {
   finished=false;
   
 #if DEBUG==1
-  //While debugging the code, we initialize the RTC NVM with the TOD each time the program starts-up
-  rtc.autoTime();                 //Set the TOD to be the compile time. 
-  DPRINT(String("RTC TOD set to ")+String(__DATE__)+String(" ")+String(__TIME__));
-  DPRINT("Start at "+String(rtc.getHour())+":"+String(rtc.getMinute()));
 
   //In debugging mode, we initialized the scheduler disabled
   bool enabled=false;
@@ -120,9 +116,11 @@ void Schedule::start() {
       //Calculate the current time as seconds elapsed since last midnight
       long currentSecond = rtc.getHour() * 3600L + rtc.getMinute()*60L + rtc.getSecond();
 
-      //Reset the scheduler just before midnight
+      //Reset the scheduler just before midnight so it will run again tomorrow
       if (currentSecond >= 86340L) finished=false;
 
+      DPRINT("Schedule finished="+String(finished)+" Currently "+String(currentSecond)+", Scheduled "+String(startingSecond));
+      
       //Is it time to run?
       if (finished) return false;                   //Avoid running more than once/day
       else return (currentSecond>=startingSecond);  //Time?

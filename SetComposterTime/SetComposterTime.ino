@@ -16,25 +16,34 @@ void setup() {
   rtc.set24Hour(true);            //Configure RTC for 24-hour service
 
   //While debugging the code, we initialize the RTC NVM with the TOD each time the program starts-up
-  rtc.autoTime();                 //Set the TOD to be the compile time. 
-  Serial.println(("Start at "+String(rtc.getHour())+":"+String(rtc.getMinute())));
+  //rtc.autoTime();                 //Set the TOD to be the compile time. 
+  Serial.begin(57600);
+  while(!SerialUSB);
+  Serial.println(("Start at "+String(rtc.getMonth())+"/"+rtc.getDate()+"/"+rtc.getYear()+"  "+String(rtc.getHour())+":"+String(rtc.getMinute())));
+  Serial.setTimeout(60000L);
 
 }
 
 void loop() {
 
   //Read the date
-  Serial.print("Enter MM:DD:YYYY date:  ");
+  Serial.println("Enter MM:DD:YYYY weekday#   ");
   byte month = Serial.parseInt();
+  byte date = Serial.parseInt();
+  byte year = Serial.parseInt();
   byte day = Serial.parseInt();
-  unsigned year = Serial.parseInt();
 
   //Read the time
-  Serial.print("Enter HH:MM:SS 24-hour time:  ");
+  Serial.println("Enter HH:MM:SS 24-hour time:  ");
   byte hour = Serial.parseInt();
   byte minute = Serial.parseInt();
   byte second = Serial.parseInt();
 
-  //Echo and confirm
+  //Set the date/time
+  rtc.setTime(second, minute, hour, day, date, month, year);
+
+  //Echo date/time from RTC
+  Serial.println("RTC "+String(month)+"/"+String(date)+"/"+String(year)+"  "+String(hour)+":"+String(minute)+":"+String(second));
+  
 
 }

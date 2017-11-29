@@ -47,6 +47,7 @@
 #include "Battery.h"
 #include "LED.h"
 #include "SoundMaker.h"
+#include <SparkFunDS1307RTC.h>
 
 //Define the composter states
 enum comState {
@@ -119,9 +120,7 @@ void setup() {
   sked.start(); 
 
    //Log the startup time
-   byte hour = sked.getHour();
-   byte minute = sked.getMinute();
-   LOG("Starting at "+String(hour)+":"+String(minute));                       
+   LOG(("Start on "+String(rtc.getMonth())+"/"+rtc.getDate()+"/"+rtc.getYear()+" at "+String(rtc.getHour())+":"+String(rtc.getMinute())+":"+rtc.getSecond()));                     
 
 }
 
@@ -176,6 +175,7 @@ void loop() {
       } else {                      //Composter is inactive 
         if (nap.isIdleTimerExpired()) {             //If the inactive interval timer has expired then put the processor to sleep
           doNap();
+          return;                   //Force re-entry of loop()
         } else if (!nap.isIdleTimerActive()) {      //Start inactive timer if not already running
           DPRINT("start idle timer");
           nap.startIdleTimer();                     //This is where we begin measuring an inactive period's duration
@@ -188,6 +188,7 @@ void loop() {
       if (Battery::isLow()) {                     //Has the battery discharged while composter naps?
         DPRINT("discharged");
         doNap();                                  //Return to anp
+        return;                     //Force re-entry of loop()
       } else if (b1.isPressed()) {
         audio.doClick();
         motor.start(MCW);
@@ -207,6 +208,7 @@ void loop() {
       } else if (b1.isStable()&&b2.isStable()&&b3.isStable()) {
         DPRINT("Nothing to do here"); //No button activity pending
         doNap();                      //Probably WDT awoke us.  Put the composter down for a nap
+        return;                       //Force re-entry of loop()
       } else {
         DPRINT("...");
       }
