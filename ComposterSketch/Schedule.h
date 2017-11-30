@@ -24,7 +24,8 @@ public:
   byte getMinute();           //Current time of day
   
 private:
-  bool finished;              //Composter has finished running on schedule today
+  bool composterRanToday;     //Composter has already ran today
+  byte  today;                //Day in this month
 };
 
 #endif /* SCHEDULE_H_ */

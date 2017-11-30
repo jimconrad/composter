@@ -35,9 +35,10 @@ void Schedule::start() {
   rtc.begin();                    //Setup I2C communication with RTC
   rtc.writeSQW(SQW_LOW);          //Disable the battery-sucking SQW feature
   rtc.set24Hour(true);            //Configure RTC for 24-hour service
+  today = rtc.getDay();           //Day in this month
 
-  //Assume we haven't finished running today
-  finished=false;
+  //Booting up resets the scheduler's state
+  composterRanToday=false;
   
 #if DEBUG==1
 
@@ -55,7 +56,15 @@ void Schedule::start() {
  * Update scheduler/rtc status 
  */
  void Schedule::update() {
-  rtc.update();
+  
+  //If the day has changed then we haven't ran today
+  rtc.update();                     //Update the clock
+  byte thisDay = rtc.getDay();      //Get the day of the month from RTC
+  if (thisDay != today) {           //Has it changed since we last checked?
+    composterRanToday = false;      //Yes, then the composter hasn't ran today
+    today = thisDay;                //Remember new day
+  }
+  
  }
 
 
@@ -66,10 +75,7 @@ void Schedule::start() {
  void Schedule::setStartTime() {
 
   long startingSecond;        //Second past midnight when composter will start (if enabled)
-  bool enabled=false;         //Record of whether scheduler is enabled or not
-
-  //Initializing finished to false will cause the composter to run after pressing B3
-  finished=false;
+  composterRanToday=false;    //Re-programming the scheduler enables the composter to run (perhaps again) today
 
   DPRINT("setStartTime()");
 
@@ -84,10 +90,8 @@ void Schedule::start() {
   startingSecond = (currentSecond < 86340L) ? currentSecond : 0L;   //If it's close to midnight then use midnight for startingSecond
 #endif
 
-  //Enable the scheduled autorun
-  enabled=true;
-
   //Record the startingSecond and enabled in non-volatile memory
+  bool enabled=true;
   EEPROM.put(EESKEDSTART,startingSecond);
   EEPROM.put(EESKEDEN,enabled);
       
@@ -97,9 +101,6 @@ void Schedule::start() {
   /**
    * Is it time to start the composter running?
    * 
-   * Note:  The code assumes that isTimeToStart() will be invoked at least once during the last minute of the day
-   * as the time-of-day wraps around to 0 at midnight.  That's why setStartTime() refused to configure the startingSecond
-   * in the last minute of the day (to ensure that isTimeToStart() will be called at least once before the time wraps).
    */
  bool Schedule::isTimeToStart() {
 
@@ -108,7 +109,7 @@ void Schedule::start() {
     
     //Look-up state variables from non-volatile (EEPROM) memory
     EEPROM.get(EESKEDSTART,startingSecond); //Second past midnight when autorun starts if scheduler is enabled
-    EEPROM.get(EESKEDEN,enabled);         //true if scheduler is enabled, false otherwise
+    EEPROM.get(EESKEDEN,enabled);           //true if scheduler is enabled, false otherwise
     
     //We'll only consider starting the composter if the scheduler is actually enabled
     if (enabled) {
@@ -116,16 +117,12 @@ void Schedule::start() {
       //Calculate the current time as seconds elapsed since last midnight
       long currentSecond = rtc.getHour() * 3600L + rtc.getMinute()*60L + rtc.getSecond();
 
-      //Reset the scheduler just before midnight so it will run again tomorrow
-      if (currentSecond >= 86340L) finished=false;
-
-      DPRINT("Schedule finished="+String(finished)+" Currently "+String(currentSecond)+", Scheduled "+String(startingSecond));
+      DPRINT("isTimeToStart composterRanToday="+String(composterRanToday)+" Currently "+String(currentSecond)+", Scheduled "+String(startingSecond));
       
       //Is it time to run?
-      if (finished) return false;                   //Avoid running more than once/day
-      else return (currentSecond>=startingSecond);  //Time?
-
-  } else {
+      return composterRanToday ? false : currentSecond>=startingSecond;
+      
+    } else {
       return false;                             //Composter's autoRun schedule isn't enabled
   }
  }
@@ -136,7 +133,7 @@ void Schedule::start() {
  * Finished running today
  */
  void Schedule::setFinished() {
-  finished=true;
+  composterRanToday=true;
  }
 
 
@@ -145,7 +142,8 @@ void Schedule::start() {
   */
   bool Schedule::enabled() {
     bool enabled;
-    return EEPROM.get(EESKEDEN,enabled);
+    EEPROM.get(EESKEDEN,enabled);
+    return enabled;
   }
 
 
@@ -162,7 +160,6 @@ void Schedule::start() {
     * Get hour
     */
     byte Schedule::getHour() {
-            //Calculate the current time as seconds elapsed since last midnight
       return rtc.getHour();
     }
 

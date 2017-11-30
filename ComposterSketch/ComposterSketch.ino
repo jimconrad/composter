@@ -313,7 +313,7 @@ void doStartMotor() {
         motor.start(MCCW);           //Start the motor
         art.start();                //Start the timer that ends autorun
         state=ARN;                  //Autorunning state
-        sked.setFinished();         //Tell sked we did it today
+        sked.setFinished();         //Tell sked we ran the composter today
 }
 
 
