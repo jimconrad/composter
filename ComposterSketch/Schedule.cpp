@@ -35,20 +35,11 @@ void Schedule::start() {
   rtc.begin();                    //Setup I2C communication with RTC
   rtc.writeSQW(SQW_LOW);          //Disable the battery-sucking SQW feature
   rtc.set24Hour(true);            //Configure RTC for 24-hour service
-  today = rtc.getDay();           //Day in this month
+  today = rtc.getDay();           //Remember which day we started
 
   //Booting up resets the scheduler's state
   composterRanToday=false;
   
-#if DEBUG==1
-
-  //In debugging mode, we initialized the scheduler disabled
-  bool enabled=false;
-  EEPROM.put(EESKEDEN,enabled);   
-#else
-  //We assume that the RTC NVM has been initialized and is running continuously on its battery after debugging
-#endif
-
 }
 
 
@@ -82,13 +73,8 @@ void Schedule::start() {
   //Calculate the current time as seconds elapsed since last midnight 
   long currentSecond = rtc.getHour() * 3600L + rtc.getMinute()*60L + rtc.getSecond();
 
-#if DEBUG==1
-  //If we're debugging, schedule the starting time for a minute from now so we wont wait a day
-  startingSecond = (currentSecond < 86340L) ? currentSecond+60L : 0L;
-#else
   //Don't configure the starting time in the last minute of the day because it will wrap around at midnight
   startingSecond = (currentSecond < 86340L) ? currentSecond : 0L;   //If it's close to midnight then use midnight for startingSecond
-#endif
 
   //Record the startingSecond and enabled in non-volatile memory
   bool enabled=true;
@@ -119,7 +105,7 @@ void Schedule::start() {
 
       DPRINT("isTimeToStart composterRanToday="+String(composterRanToday)+" Currently "+String(currentSecond)+", Scheduled "+String(startingSecond));
       
-      //Is it time to run?
+      //If the composter hasn't already ran then check to see if it's time to run
       return composterRanToday ? false : currentSecond>=startingSecond;
       
     } else {

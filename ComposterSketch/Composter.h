@@ -3,7 +3,7 @@
  */
 
 //Debug configuration
- #define  DEBUG  1
+ #define  DEBUG  0
 
  //Wait for USB Serial port when debugging
  #define  DWAITUSB(n)    {for(int i=1;i<=n&&(!SerialUSB);i++) delay(1000);}
