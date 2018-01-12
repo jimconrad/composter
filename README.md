@@ -2,7 +2,7 @@
 Arduino-based controller for an automated composter
 
 # Author(s)
-Jim Conrad, Boise, Idaho (USA)
+Jim Conrad, Boise, Idaho (USA), jimconrad@boisestate.edu
 
 # Composting
 A composter is a device for manufacturing compost from organic waste such
