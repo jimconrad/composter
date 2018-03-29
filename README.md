@@ -58,6 +58,7 @@ licensed with the MIT License (see "License" file in project folder).
 * Speaker:          https://www.sparkfun.com/products/7950 
 
 # Manifest
+```
 Battery.*           Monitors the charge-level of the storage battery
 Composter.*         An Arduino "sketch" implementing the main composter controller
 LED.*               Controls a single LED on a specified Arduino pin
@@ -69,6 +70,7 @@ PSleep.*            Processor sleep features (for power conservation)
 PTimer.*            Yet another timer implementation
 Schedule.*          Schedules the autorun at some specified time-of-day
 SoundMaker.*        Clicks and beeps
+```
 
 
 
