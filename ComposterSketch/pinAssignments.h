@@ -18,19 +18,19 @@
 #define pinSCL      3   //I2C SCL
 
 //Control panel buttons must be on external (level) interrupt pins to wake-up processor
-#define pinB1  		  0		//Digital INT pin (RXI) for Button 1 
-#define pinB2  		  1 	//Digital INT pin (TXO) for Button 2 
-#define pinB3       7   //Digital INT pin for BUtton 3
+#define pinB1  		  0		//BWN Digital INT pin (RXI) for Button 1 
+#define pinB2  		  1 	//RED Digital INT pin (TXO) for Button 2 
+#define pinB3       7   //ORG Digital INT pin for BUtton 3
 
 //LED Indicators
-#define pinSkedLED  4   //Scheduler pgmd to autorun composter drum
-#define pinOvrLED   5   //Battery overcharged LED
-#define pinDisLED  6    //Battery discharged LED
+#define pinSkedLED  4   //YEL Scheduler pgmd to autorun LED GRN
+#define pinOvrLED   5   //GRN Battery overcharged       LED BLU
+#define pinDisLED   6   //BLU Battery discharged        LED RED
 
 //Motor controller pins (requires a PWM)
-#define pinMotorDir 8 	//Digital pin for motor direction
-#define pinMotorPwm 9   //Digital PWM pin for motor speed
-#define pinMotorPwr 10	//Digital pin for motor controller power supply
+#define pinMotorDir 8 	//GRY Digital pin for motor direction
+#define pinMotorPwm 9   //WHT Digital PWM pin for motor speed
+#define pinMotorPwr 10	//BWN Digital pin for motor controller power supply
 
 //Reserved pins for the SPI serial bus in case we ever install an LCD panel
 #define pinAudio    15  //Speaker
